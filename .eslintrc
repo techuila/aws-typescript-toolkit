@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "plugins": ["@typescript-eslint"],
+  "extends": ["eslint:recommended", "prettier"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "objectLiteralProperty",
+        "format": ["camelCase", "snake_case", "kebab-case"]
+      }
+    ]
+  },
+  "ignorePatterns": ["node_modules/**"]
+}
