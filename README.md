@@ -70,8 +70,7 @@ const EntityName = createConstructs({
         const eventBus = EventBus.fromEventBusArn(scope, 'ImportedEventBus', eventBusArn);
         eventBus.grantPutEventsTo(construct);
 
-        // Fetch param stores:
-        // 1. Branch.io key
+        // Fetch param store
         const ssmClient = new SSMActions();
         const parameterInput = {
           Name: `/${DEPLOYMENT_NAME}/key`,
