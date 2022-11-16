@@ -30,11 +30,13 @@ yarn install aws-typescript-toolkit
 import { Services, BaseHandler, Constants, Construct, Exceptions, Types, Utils } from 'aws-typescript-toolkit';
 
 const { Bucket, DeepLink, Dynamodb, Event, Logger, SSM } = Service;
-const { VERSION, DEPLOYMENT_NAME, PLATFORM_PREFIX, TABLE_NAME } = Constants;
 const { createConstructs, setResources, ConstructMiddleware } = Construct;
 const { BaseError, BackendError, DatabaseError } = Exceptions;
 const { createFileNameHandler, streamToString, flattenInput, constructName, generateName, getConstructs } = Utils;
 const { ValueOf, IAWSLambdaHandler, GqlInput, StackProps, ConstructTypes, IConstruct, INewConstruct, Callback, GenericExtend, gql } = Types;
+const { getConfig } = Config;
+
+const { VERSION, DEPLOYMENT_NAME, PLATFORM_PREFIX, TABLE_NAME } = getConfig();
 ```
 
 ## Construct
@@ -46,11 +48,13 @@ _Usage is similar to `createSlice` from [Redux Toolkit](https://redux-toolkit.js
 ```typescript
 // cdk/constructs/lambda/EntityName.ts
 
-import { Construct, Services, Constants } from 'aws-typescript-toolkit'
+import { Construct, Services, Config } from 'aws-typescript-toolkit'
 
 const { createConstructs } = Construct;
 const { SSMActions } = Services.SSM
-const { DEPLOYMENT_NAME } = Constants;
+const { getConfig } = Config;
+
+const { TABLE_NAME } = getConfig();
 
 const EntityName = createConstructs({
   type: NodejsFunction,
