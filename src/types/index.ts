@@ -1,5 +1,6 @@
 import { APIGatewayProxyResultV2, Context, Callback as ICallback } from 'aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
@@ -27,7 +28,7 @@ export interface GqlInput {
 
 export type StackProps = [Construct, string, any?];
 
-export type ConstructTypes = NodejsFunction | Bucket | Table;
+export type ConstructTypes = NodejsFunction | Bucket | Table | CfnGraphQLApi;
 
 export interface IConstruct<T extends ConstructTypes> {
   new (...args: StackProps): T;
@@ -41,8 +42,10 @@ export interface IConstructs<T extends ConstructTypes> {
 export type Callback<T extends ConstructTypes> = (scope: Construct, construct: T, resources: Resources) => void;
 
 export interface Resources {
-  lambda: IConstructs<NodejsFunction>;
-  bucket: IConstructs<Bucket>;
+  lambda?: IConstructs<NodejsFunction>;
+  bucket?: IConstructs<Bucket>;
+  dynamodb?: IConstructs<Table>;
+  appsync?: IConstructs<CfnGraphQLApi>;
 }
 
 export type GenericExtend<T extends ConstructTypes> = T & { callback?: (resources: Resources) => void };
