@@ -11,13 +11,13 @@ const getConfig = () => {
     }
   }
 
-  const version = `-v${config.version.replace(/\./g, '-')}`;
+  const version = `v${config.version.replace(/\./g, '-')}`;
 
   const VERSION = version;
   const DEPLOYMENT_NAME = JSON.parse(process.env.CDK_CONTEXT_JSON ?? '{}').deployment_name ?? '';
   const PLATFORM_PREFIX = config.name;
   const TABLE_PREFIX = config?.table_name?.toUpperCase() ?? '';
-  const TABLE_NAME = config.table_name ? `${config.table_name}-${DEPLOYMENT_NAME}-table` : '';
+  const TABLE_NAME = config?.table_name ? `${config?.table_name}-${DEPLOYMENT_NAME}-table` : '';
 
   return { VERSION, DEPLOYMENT_NAME, PLATFORM_PREFIX, TABLE_PREFIX, TABLE_NAME };
 };
