@@ -5,10 +5,16 @@
   "description": "AWS typescript toolkit",
   "license": "ISC",
   "author": "techuila",
-  "main": "dist/lib/index.js",
-  "types": "dist/lib/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
-    "dist"
+    "config",
+    "construct",
+    "exceptions",
+    "lib",
+    "services",
+    "types",
+    "utils"
   ],
   "scripts": {
     "build": "tsc",
