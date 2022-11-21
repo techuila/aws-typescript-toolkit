@@ -114,7 +114,7 @@ export const setResources = (resources: Resources) => {
     const constructs = Object.values(resource);
 
     for (const construct of constructs) {
-      if (construct.callback) {
+      if (construct?.callback) {
         construct.callback(resources);
       }
     }
