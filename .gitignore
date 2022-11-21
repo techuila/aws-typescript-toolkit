@@ -5,3 +5,11 @@ dist/
 *.log
 
 .DS_Store
+
+config
+construct
+exceptions
+lib
+services
+types
+utils
