@@ -2,16 +2,14 @@ import { serializeError } from 'serialize-error';
 import { IAWSLambdaHandler, gql } from '../types';
 import { Log, Logger } from '../services/logger';
 import { BackendError } from '../exceptions';
-import { Context } from 'aws-lambda';
+import { Callback, Context } from 'aws-lambda';
 
 // Base handler used by other lambda handlers.
 export default abstract class BaseHandler extends Logger {
   public __typename: any;
 
   // Function to be overridden by the handlers
-  abstract perform<T extends IAWSLambdaHandler>(...args: Parameters<T>): any;
-  abstract perform(event: any, context: Context): any;
-  abstract perform(event: any): any;
+  abstract perform(event: any, context: Context, callback: Callback): any;
 
   constructor(protected strict = false) {
     super();
