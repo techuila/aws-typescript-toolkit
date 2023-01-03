@@ -1,6 +1,5 @@
 import { ValueOf, levels } from './../types/index';
 import { Context } from 'aws-lambda';
-import getConfig from '../config';
 
 type LogData = {
   body: Record<string, string>;
@@ -25,7 +24,6 @@ const logger = new Logger();
 export const Log = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
   const method = descriptor.value;
   const log = logger.log;
-  const { PLATFORM_PREFIX } = getConfig();
 
   descriptor.value = async function (...args: any) {
     const [event, context] = args;
@@ -33,7 +31,6 @@ export const Log = (target: any, propertyKey: string, descriptor: PropertyDescri
       ...context,
       body: event,
       level: 'INFO',
-      service: PLATFORM_PREFIX,
       response: ''
     };
 
