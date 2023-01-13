@@ -238,6 +238,19 @@ export const dbHelper = {
     };
     const command = new BatchWriteItemCommand(params);
     await ddbClient.send(command);
+  },
+  deleteItems: async (TableName: string, Keys: { PK: string; SK: string }[]) => {
+    const params = {
+      RequestItems: {
+        [TableName]: Keys.map((key) => ({
+          DeleteRequest: {
+            Key: marshall(key)
+          }
+        }))
+      }
+    };
+    const command = new BatchWriteItemCommand(params);
+    await ddbClient.send(command);
   }
 };
 
