@@ -115,7 +115,7 @@ export class DynamoDbActions {
   async customQuery<T extends {}>(
     { TableName, IndexName, PrimaryKey, SortKey, FilterExpression }: CustomQueryItemInput<T>,
     Options?: Partial<QueryCommandInput>
-  ): Promise<QueryCommandOutput> {
+  ) {
     let filterCondition = {};
     const { keys, data, functions } = getKeysAndData({ PrimaryKey, SortKey });
 
@@ -133,9 +133,9 @@ export class DynamoDbActions {
     };
 
     const result = await this.query(params);
-    const Items = result.Items ? this.unmarshallArray(result.Items) : undefined;
-    delete result.Items;
-    return { Items, ...result };
+    result.Items = <Record<string, any>[] | undefined>(result.Items ? this.unmarshallArray(result.Items) : undefined);
+
+    return result;
   }
 
   @CatchDatabaseException
