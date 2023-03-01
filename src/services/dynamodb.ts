@@ -121,6 +121,9 @@ export class DynamoDbActions {
     let ExpressionAttributeNames = {};
     let ExpressionAttributeValues = {};
 
+    console.log('[AWS-TYPESCRIPT-TOOLKIT] | Options ');
+    console.log(Options);
+
     if (Options) {
       ExpressionAttributeNames = Options.ExpressionAttributeNames ?? {};
       ExpressionAttributeValues = Options.ExpressionAttributeValues ?? {};
@@ -147,6 +150,9 @@ export class DynamoDbActions {
       ...ExpressionAttributeValues
     };
 
+    console.log('[AWS-TYPESCRIPT-TOOLKIT] | expressions');
+    console.log(expressions);
+
     if (!Object.keys(expressions.ExpressionAttributeNames).length) {
       delete expressions.ExpressionAttributeNames;
     }
@@ -157,7 +163,7 @@ export class DynamoDbActions {
       ...Options,
       ...expressions
     };
-    console.log('[AWS-TYPESCRIPT-TOOLKIT]');
+    console.log('[AWS-TYPESCRIPT-TOOLKIT] | Params');
     console.log(params);
 
     const result = await this.query(params);
