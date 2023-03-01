@@ -118,8 +118,16 @@ export class DynamoDbActions {
   ): Promise<Omit<QueryCommandOutput, 'Items'> & { Items: Record<string, any>[] | undefined }> {
     let filterCondition = {};
     const { keys, data, functions } = getKeysAndData({ PrimaryKey, SortKey });
-    // @ts-ignore: ignore undefined values
-    const { ExpressionAttributeNames, ExpressionAttributeValues, ..._Options } = Options;
+    let ExpressionAttributeNames = {};
+    let ExpressionAttributeValues = {};
+
+    if (Options) {
+      ExpressionAttributeNames = Options.ExpressionAttributeNames ?? {};
+      ExpressionAttributeValues = Options.ExpressionAttributeValues ?? {};
+
+      delete Options.ExpressionAttributeNames;
+      delete Options.ExpressionAttributeValues;
+    }
 
     if (FilterExpression) {
       const { data, callback } = FilterExpression;
@@ -129,17 +137,17 @@ export class DynamoDbActions {
     const expressions = generateExpressions({ KeyCondition: { keys, data, functions }, ...filterCondition });
     expressions.ExpressionAttributeNames = {
       ...expressions.ExpressionAttributeNames,
-      ...(ExpressionAttributeNames ?? {})
+      ...ExpressionAttributeNames
     };
     expressions.ExpressionAttributeValues = {
       ...expressions.ExpressionAttributeValues,
-      ...(ExpressionAttributeValues ?? {})
+      ...ExpressionAttributeValues
     };
 
     const params = {
       TableName,
       IndexName,
-      ..._Options,
+      ...Options,
       ...expressions
     };
 
