@@ -134,15 +134,22 @@ export class DynamoDbActions {
       const keys = Object.keys(data);
       filterCondition = { FilterCondition: { keys, data, callback } };
     }
+
     const expressions = generateExpressions({ KeyCondition: { keys, data, functions }, ...filterCondition });
+
     expressions.ExpressionAttributeNames = {
       ...expressions.ExpressionAttributeNames,
       ...ExpressionAttributeNames
     };
+
     expressions.ExpressionAttributeValues = {
       ...expressions.ExpressionAttributeValues,
       ...ExpressionAttributeValues
     };
+
+    if (!Object.keys(expressions.ExpressionAttributeNames).length) {
+      delete expressions.ExpressionAttributeNames;
+    }
 
     const params = {
       TableName,
