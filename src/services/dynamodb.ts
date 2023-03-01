@@ -120,16 +120,14 @@ export class DynamoDbActions {
     const { keys, data, functions } = getKeysAndData({ PrimaryKey, SortKey });
     let ExpressionAttributeNames = {};
     let ExpressionAttributeValues = {};
+    const _Options = { ...Options };
 
-    console.log('[AWS-TYPESCRIPT-TOOLKIT] | Options ');
-    console.log(Options);
+    if (_Options) {
+      ExpressionAttributeNames = _Options.ExpressionAttributeNames ?? {};
+      ExpressionAttributeValues = _Options.ExpressionAttributeValues ?? {};
 
-    if (Options) {
-      ExpressionAttributeNames = Options.ExpressionAttributeNames ?? {};
-      ExpressionAttributeValues = Options.ExpressionAttributeValues ?? {};
-
-      delete Options.ExpressionAttributeNames;
-      delete Options.ExpressionAttributeValues;
+      delete _Options.ExpressionAttributeNames;
+      delete _Options.ExpressionAttributeValues;
     }
 
     if (FilterExpression) {
@@ -150,9 +148,6 @@ export class DynamoDbActions {
       ...ExpressionAttributeValues
     };
 
-    console.log('[AWS-TYPESCRIPT-TOOLKIT] | expressions');
-    console.log(expressions);
-
     if (!Object.keys(expressions.ExpressionAttributeNames).length) {
       delete expressions.ExpressionAttributeNames;
     }
@@ -160,7 +155,7 @@ export class DynamoDbActions {
     const params = {
       TableName,
       IndexName,
-      ...Options,
+      ..._Options,
       ...expressions
     };
     console.log('[AWS-TYPESCRIPT-TOOLKIT] | Params');
