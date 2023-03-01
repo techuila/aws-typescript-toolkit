@@ -157,6 +157,8 @@ export class DynamoDbActions {
       ...Options,
       ...expressions
     };
+    console.log('[AWS-TYPESCRIPT-TOOLKIT]');
+    console.log(params);
 
     const result = await this.query(params);
     const Items = result.Items ? this.unmarshallArray(result.Items) : undefined;
