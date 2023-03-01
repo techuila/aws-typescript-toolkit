@@ -129,7 +129,9 @@ export class DynamoDbActions {
       TableName,
       IndexName,
       ...Options,
-      ...generateExpressions({ KeyCondition: { keys, data, functions }, ...filterCondition })
+      ...(Object.keys(filterCondition).length
+        ? generateExpressions({ KeyCondition: { keys, data, functions }, ...filterCondition })
+        : {})
     };
 
     const result = await this.query(params);
