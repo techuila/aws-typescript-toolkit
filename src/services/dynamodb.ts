@@ -118,20 +118,29 @@ export class DynamoDbActions {
   ): Promise<Omit<QueryCommandOutput, 'Items'> & { Items: Record<string, any>[] | undefined }> {
     let filterCondition = {};
     const { keys, data, functions } = getKeysAndData({ PrimaryKey, SortKey });
+    // @ts-ignore: ignore undefined values
+    const { ExpressionAttributeNames, ExpressionAttributeValues, ..._Options } = Options;
 
     if (FilterExpression) {
       const { data, callback } = FilterExpression;
       const keys = Object.keys(data);
       filterCondition = { FilterCondition: { keys, data, callback } };
     }
+    const expressions = generateExpressions({ KeyCondition: { keys, data, functions }, ...filterCondition });
+    expressions.ExpressionAttributeNames = {
+      ...expressions.ExpressionAttributeNames,
+      ...(ExpressionAttributeNames ?? {})
+    };
+    expressions.ExpressionAttributeValues = {
+      ...expressions.ExpressionAttributeValues,
+      ...(ExpressionAttributeValues ?? {})
+    };
 
     const params = {
       TableName,
       IndexName,
-      ...Options,
-      ...(Object.keys(filterCondition).length
-        ? generateExpressions({ KeyCondition: { keys, data, functions }, ...filterCondition })
-        : {})
+      ..._Options,
+      ...expressions
     };
 
     const result = await this.query(params);
