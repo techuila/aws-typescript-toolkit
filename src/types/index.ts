@@ -35,17 +35,17 @@ export interface IConstruct<T extends ConstructTypes> {
 }
 
 export type INewConstruct<T extends ConstructTypes> = T;
-export interface IConstructs<T extends ConstructTypes> {
-  [key: string]: GenericExtend<T>;
-}
+export type IConstructs<T extends Record<string, ConstructTypes>> = {
+  [K in keyof T]: GenericExtend<T[K]>;
+};
 
 export type Callback<T extends ConstructTypes> = (scope: Construct, construct: T, resources: Resources) => void;
 
 export interface Resources {
-  lambda?: IConstructs<NodejsFunction>;
-  bucket?: IConstructs<Bucket>;
-  dynamodb?: IConstructs<Table>;
-  appsync?: IConstructs<CfnGraphQLApi>;
+  lambda?: IConstructs<Record<string, NodejsFunction>>;
+  bucket?: IConstructs<Record<string, Bucket>>;
+  dynamodb?: IConstructs<Record<string, Table>>;
+  appsync?: IConstructs<Record<string, CfnGraphQLApi>>;
 }
 
 export type GenericExtend<T extends ConstructTypes> = T & { callback?: (resources: Resources) => void };
