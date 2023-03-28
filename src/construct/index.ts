@@ -108,7 +108,7 @@ export const createConstructs = <T extends ConstructTypes, K extends Constructs<
 };
 
 export const setResources = (resources: Resources) => {
-  const resources_arr: IConstructs<ConstructTypes>[] = Object.values(resources);
+  const resources_arr: IConstructs<Record<string, ConstructTypes>>[] = Object.values(resources);
 
   for (const resource of resources_arr) {
     const constructs = Object.values(resource);
