@@ -5,5 +5,6 @@ export * as Logger from './logger';
 export * as Bucket from './bucket';
 export * as Event from './event';
 export * as SSM from './ssm';
-export * as Scheduler from './scheduler'
-export * as SNS from './sns'
+export * as Scheduler from './scheduler';
+export * as SNS from './sns';
+export * as StepFunction from './stepfunction';
