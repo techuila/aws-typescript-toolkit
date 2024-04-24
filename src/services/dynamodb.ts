@@ -1,6 +1,7 @@
 import { BackendError } from './../exceptions/index';
 import {
   AttributeValue,
+  BatchGetItemCommand,
   BatchWriteItemCommand,
   CreateTableCommand,
   CreateTableCommandInput,
@@ -175,6 +176,21 @@ export class DynamoDbActions {
     const data = await this.client.send(command);
 
     return this.unmarshall(data.Item ?? {});
+  }
+
+  @CatchDatabaseException
+  async bulkGet<T extends Record<string, any>[]>(tableName: string, items: T) {
+    const params = {
+      RequestItems: {
+        [tableName]: {
+          Keys: items.map(item => marshall(item))
+        }
+      }
+    };
+
+    const command = new BatchGetItemCommand(params);
+    const data = await this.client.send(command);
+    return data;
   }
 
   @CatchDatabaseException
