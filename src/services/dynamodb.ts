@@ -188,9 +188,10 @@ export class DynamoDbActions {
       }
     };
 
+    // @TODO Handle `data.UnprocessedKeys`
     const command = new BatchGetItemCommand(params);
     const data = await this.client.send(command);
-    return data;
+    return this.unmarshallArray(data.Responses![tableName]);
   }
 
   @CatchDatabaseException
