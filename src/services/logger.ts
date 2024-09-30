@@ -4,8 +4,8 @@ import { ValueOf, levels } from './../types/index';
 import { Callback, Context } from 'aws-lambda';
 import getConfig from '../config/index';
 
-const { DEPLOYMENT_NAME } = getConfig()
 
+const DEPLOYMENT_NAME = JSON.parse(process.env.CDK_CONTEXT_JSON ?? '{}').deployment_name ?? process.env.DEPLOYMENT_NAME ?? '';
 
 Sentry.init({
   dsn: "https://eb1e53f2bc0babfb8d9255f59b665a1e@o4507405535739904.ingest.us.sentry.io/4507961792462848",
