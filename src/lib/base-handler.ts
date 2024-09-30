@@ -1,7 +1,6 @@
 import { serializeError } from 'serialize-error';
 import { IAWSLambdaHandler, gql } from '../types';
 import { Log, Logger } from '../services/logger';
-import { SentryWrapper } from '../services/sentry';
 import { BackendError } from '../exceptions';
 import { Callback, Context } from 'aws-lambda';
 
@@ -20,7 +19,6 @@ export default abstract class BaseHandler extends Logger {
 
   // Wrap perform(), invoked by AWS Lambda.
   @Log
-  @SentryWrapper
   async handler(...args: Parameters<IAWSLambdaHandler>) {
     try {
       const result = await this.perform(...args);

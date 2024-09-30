@@ -1,5 +1,25 @@
+import * as Sentry from "@sentry/aws-serverless";
+//import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { ValueOf, levels } from './../types/index';
-import { Context } from 'aws-lambda';
+import { Callback, Context } from 'aws-lambda';
+import getConfig from '../config/index';
+
+const { DEPLOYMENT_NAME } = getConfig()
+
+
+Sentry.init({
+  dsn: "https://eb1e53f2bc0babfb8d9255f59b665a1e@o4507405535739904.ingest.us.sentry.io/4507961792462848",
+  //integrations: [
+    //nodeProfilingIntegration(),
+  //],
+  // Tracing
+  tracesSampleRate: 1.0, //  Capture 100% of the transactions
+
+  // Set sampling rate for profiling - this is relative to tracesSampleRate
+  profilesSampleRate: 1.0,
+  environment: DEPLOYMENT_NAME
+});
+
 
 type LogData = {
   body: Record<string, string>;
@@ -25,7 +45,8 @@ export const Log = (target: any, propertyKey: string, descriptor: PropertyDescri
   const method = descriptor.value;
   const log = logger.log;
 
-  descriptor.value = async function (...args: any) {
+  descriptor.value = function (...args: any[]) {
+    const _context = this; // Capture the context of the method being decorated
     const [event, context] = args;
     const logData: LogData = {
       ...context,
@@ -34,22 +55,28 @@ export const Log = (target: any, propertyKey: string, descriptor: PropertyDescri
       response: ''
     };
 
-    try {
-      const result = await method.apply(this, args);
+    return Sentry.wrapHandler(async (...innerArgs: any[]) => {
+      try {
+        const result = await method.apply(_context, innerArgs); // Use the captured context
 
-      logData.response = result;
-      log(logData, 'TriggerHandler');
+        logData.response = result;
+        log(logData, 'TriggerHandler');
 
-      return result;
-    } catch (error) {
-      logData.level = 'ERROR';
-      logData.response = error;
+        return result;
+      } catch (error) {
+        logData.level = 'ERROR';
+        logData.response = error;
 
-      if (error instanceof Error) logData.stack = error.stack;
+        if (error instanceof Error) {
+          logData.stack = error.stack;
+          Sentry.captureException(error);
+        }
 
-      log(logData);
-
-      throw error;
-    }
+        log(logData);
+        throw error;
+      }
+    })(...args as [any, Context, Callback<any>]);
   };
+
+  return descriptor;
 };

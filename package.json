@@ -1,7 +1,7 @@
 {
   "name": "aws-typescript-toolkit",
   "type": "commonjs",
-  "version": "1.8.0",
+  "version": "1.8.12",
   "description": "AWS typescript toolkit",
   "license": "ISC",
   "author": "techuila",
@@ -49,7 +49,6 @@
   "dependencies": {
     "@aws-sdk/smithy-client": "^3.0.0",
     "@sentry/aws-serverless": "^8.30.0",
-    "@sentry/profiling-node": "^8.30.0",
     "get-caller-file": "^2.0.5",
     "serialize-error": "^11.0.0"
   },
