@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/aws-serverless';
 import { serializeError } from 'serialize-error';
 import { IAWSLambdaHandler, gql } from '../types';
 import { Log, Logger } from '../services/logger';
@@ -39,6 +40,8 @@ export default abstract class BaseHandler extends Logger {
       if (this.strict) {
         throw err;
       }
+
+      Sentry.captureException(error);
 
       return serializeError(error);
     }
