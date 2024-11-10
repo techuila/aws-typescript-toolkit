@@ -57,6 +57,11 @@ export const Log = (target: any, propertyKey: string, descriptor: PropertyDescri
       response: ''
     };
 
+    // Set the user context for Sentry if available
+    if (event.username) {
+      Sentry.setUser({ username: event.username, email: event.email });
+    }
+
     return Sentry.wrapHandler(async (...innerArgs: any[]) => {
       try {
         const result = await method.apply(_context, innerArgs); // Use the captured context
