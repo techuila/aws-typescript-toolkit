@@ -38,7 +38,7 @@ export const Log = (target: any, propertyKey: string, descriptor: PropertyDescri
     };
 
     Sentry.init({
-      dsn: 'https://o4507405535739904.ingest.us.sentry.io/4507961792462848',
+      dsn: 'https://eb1e53f2bc0babfb8d9255f59b665a1e@o4507405535739904.ingest.us.sentry.io/4507961792462848',
       tracesSampleRate: 1.0,
       profilesSampleRate: 1.0,
       environment: process.env.STAGE_NAME
