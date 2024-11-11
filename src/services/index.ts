@@ -9,3 +9,4 @@ export * as Scheduler from './scheduler';
 export * as SNS from './sns';
 export * as StepFunction from './stepfunction';
 export * as AppConfigData from './appconfig';
+export * as Sentry from '@sentry/aws-serverless';
