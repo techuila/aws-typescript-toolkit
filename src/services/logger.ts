@@ -3,31 +3,6 @@ import * as Sentry from '@sentry/aws-serverless';
 import { ValueOf, levels } from './../types/index';
 import { Callback, Context } from 'aws-lambda';
 
-const DEPLOYMENT_NAME =
-  JSON.parse(process.env.CDK_CONTEXT_JSON ?? '{}').deployment_name ?? process.env.DEPLOYMENT_NAME ?? '';
-console.log('DEPLOYMENT_NAME', DEPLOYMENT_NAME);
-console.log(
-  `JSON.parse(process.env.CDK_CONTEXT_JSON ?? '{}').deployment_name`,
-  JSON.parse(process.env.CDK_CONTEXT_JSON ?? '{}').deployment_name
-);
-console.log('process.env.DEPLOYMENT_NAME', process.env.DEPLOYMENT_NAME);
-
-const shouldInitializeSentry = DEPLOYMENT_NAME === 'production' || DEPLOYMENT_NAME === 'nightly';
-console.log('shouldInitializeSentry', shouldInitializeSentry);
-
-Sentry.init({
-  dsn: 'https://eb1e53f2bc0babfb8d9255f59b665a1e@o4507405535739904.ingest.us.sentry.io/4507961792462848',
-  //integrations: [
-  //nodeProfilingIntegration(),
-  //],
-  // Tracing
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
-
-  // Set sampling rate for profiling - this is relative to tracesSampleRate
-  profilesSampleRate: 1.0,
-  environment: DEPLOYMENT_NAME
-});
-
 type LogData = {
   body: Record<string, string>;
   level: ValueOf<typeof levels>;
@@ -81,7 +56,6 @@ export const Log = (target: any, propertyKey: string, descriptor: PropertyDescri
 
         if (error instanceof Error) {
           logData.stack = error.stack;
-          Sentry.captureException(error);
         }
 
         log(logData);

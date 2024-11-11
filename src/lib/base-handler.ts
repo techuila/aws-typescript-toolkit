@@ -1,9 +1,9 @@
-import * as Sentry from '@sentry/aws-serverless';
 import { serializeError } from 'serialize-error';
 import { IAWSLambdaHandler, gql } from '../types';
 import { Log, Logger } from '../services/logger';
 import { BackendError } from '../exceptions';
 import { Callback, Context } from 'aws-lambda';
+import * as Sentry from '@sentry/aws-serverless';
 
 // Base handler used by other lambda handlers.
 export default abstract class BaseHandler extends Logger {
@@ -37,11 +37,11 @@ export default abstract class BaseHandler extends Logger {
         err = new BackendError(error);
       }
 
+      Sentry.captureException(error);
+
       if (this.strict) {
         throw err;
       }
-
-      Sentry.captureException(error);
 
       return serializeError(error);
     }
