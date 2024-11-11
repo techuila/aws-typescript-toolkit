@@ -12,10 +12,17 @@ export default abstract class BaseHandler extends Logger {
   // Function to be overridden by the handlers
   abstract perform(event: any, context: Context, callback: Callback): any;
 
-  constructor(protected strict = false) {
+  constructor(dsn: string, stageName: string, protected strict = false) {
     super();
     // Bind this context to handler method
     this.handler = this.handler.bind(this);
+
+    Sentry.init({
+      dsn: dsn,
+      tracesSampleRate: 1.0,
+      profilesSampleRate: 1.0,
+      environment: stageName
+    });
   }
 
   // Wrap perform(), invoked by AWS Lambda.
