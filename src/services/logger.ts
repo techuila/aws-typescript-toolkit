@@ -37,6 +37,13 @@ export const Log = (target: any, propertyKey: string, descriptor: PropertyDescri
       response: ''
     };
 
+    Sentry.init({
+      dsn: 'https://o4507405535739904.ingest.us.sentry.io/4507961792462848',
+      tracesSampleRate: 1.0,
+      profilesSampleRate: 1.0,
+      environment: process.env.STAGE_NAME
+    });
+
     // Set the user context for Sentry if available
     if (event.username) {
       Sentry.setUser({ username: event.username, email: event.email });
