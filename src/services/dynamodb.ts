@@ -19,7 +19,6 @@ import {
   UpdateItemCommand,
   UpdateItemCommandInput
 } from '@aws-sdk/client-dynamodb';
-import { DynamoReturnValues } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { CatchDatabaseException } from '../utils';
 import { v4 as uuidv4 } from 'uuid';
@@ -35,6 +34,14 @@ const Functions = {
   CONTAINS: 'contains',
   SIZE: 'size'
 } as const;
+
+enum DynamoReturnValues {
+  ALL_NEW = "ALL_NEW",
+  ALL_OLD = "ALL_OLD",
+  NONE = "NONE",
+  UPDATED_NEW = "UPDATED_NEW",
+  UPDATED_OLD = "UPDATED_OLD"
+};
 
 type Function = { function?: ValueOf<typeof Functions> };
 export type Keys = {
