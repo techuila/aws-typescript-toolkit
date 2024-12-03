@@ -1,30 +1,11 @@
-import { APIGatewayProxyResultV2, Context, Callback as ICallback } from 'aws-lambda';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
-export type OperationType = 'Query' | 'Mutation';
-export type CognitoAuth = { cognito_auth_token: Record<string, any> };
-export type AppsyncResolverEvent<T extends OperationType, I> = (T extends 'Query'
-  ? { [K in keyof I]: I[K] }
-  : { input: I }) &
-  CognitoAuth;
 
 export type ValueOf<T> = T[keyof T];
-
-export type IAWSLambdaHandler = (
-  event: any,
-  context: Context,
-  callback: ICallback<APIGatewayProxyResultV2>
-) => Promise<APIGatewayProxyResultV2<any>>;
-
-export interface GqlInput {
-  input: {
-    [key: string]: any;
-  };
-}
 
 export type StackProps = [Construct, string, any?];
 
@@ -64,17 +45,3 @@ export class _Construct<T extends ConstructTypes> {
     return Object.create(Model);
   }
 }
-
-export const gql = {
-  CommonErrors: {
-    BACKEND_ERROR: 'BackendError',
-    DATABASE_ERROR: 'DatabaseError',
-    UNAUTHORIZED_ERROR: 'UnauthorizedError'
-  }
-} as const;
-
-export const levels = {
-  INFO: 'INFO',
-  WARN: 'WARN',
-  ERROR: 'ERROR'
-} as const;

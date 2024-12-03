@@ -8,6 +8,7 @@ import {
   GetAppCommand
 } from '@aws-sdk/client-pinpoint';
 
+
 export const client = new PinpointClient({});
 export class PinpointActions {
   public client = client;

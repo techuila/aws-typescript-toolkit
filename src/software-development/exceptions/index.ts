@@ -1,4 +1,4 @@
-import { ValueOf, gql } from '../types';
+import { gql } from '../types';
 
 export class BaseError extends Error {
   __typename: string;
@@ -33,5 +33,13 @@ export class DatabaseError extends BaseError {
     const message = `Database error occurred.`;
     const stack = error instanceof Error ? error.stack : undefined;
     super(500, message, gql.CommonErrors.DATABASE_ERROR, stack);
+  }
+}
+
+export class UnauthorizedError extends BaseError {
+  constructor(error: unknown) {
+    const message = `Unauthorized request occurred.`;
+    const stack = error instanceof Error ? error.stack : undefined;
+    super(500, message, gql.CommonErrors.UNAUTHORIZED_ERROR, stack);
   }
 }

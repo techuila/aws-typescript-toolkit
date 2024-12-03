@@ -1,6 +1,8 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { Entity, IBaseRepository } from './base-repository';
 import { Keys } from '../services/dynamodb';
-import { v4 as uuidv4 } from 'uuid';
+
 
 export type PrimaryKeys = { PK: string; SK?: string };
 export type GetPrimaryKeys = PrimaryKeys & { id: string };

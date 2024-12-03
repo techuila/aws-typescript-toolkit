@@ -1,4 +1,3 @@
-import { BackendError } from '../exceptions';
 import { join } from 'path';
 
 const getConfig = () => {
@@ -7,7 +6,7 @@ const getConfig = () => {
   const config = require(join(process.cwd(), 'platform.json')) as Record<string, any> & Object;
   for (const key of REQUIRED_CONFIG_KEYS) {
     if (!config.hasOwnProperty(key)) {
-      throw new BackendError("Missing property 'version' on platform.json.");
+      throw new Error("Missing property 'version' on platform.json.");
     }
   }
 

@@ -1,8 +1,9 @@
 import 'jest';
-import { BackendError } from './../src/exceptions/index';
 import { APIGatewayProxyResultV2, Callback, Context } from 'aws-lambda';
-import { BaseHandler } from '../src/lib';
-import { gql } from '../src/types';
+
+import { BackendError } from '../../src/software-development/exceptions';
+import { BaseHandler } from '../../src/software-development/lib';
+import { gql } from '../../src/software-development/types';
 
 const context = {} as Context;
 const callback: Callback<APIGatewayProxyResultV2> = () => {};

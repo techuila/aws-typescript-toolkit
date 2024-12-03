@@ -1,5 +1,6 @@
 import { SNSClient, PublishCommand, PublishCommandInput } from '@aws-sdk/client-sns';
 
+
 export const client = new SNSClient({});
 
 export class SNSActions {
