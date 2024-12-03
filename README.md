@@ -27,16 +27,21 @@ yarn install aws-typescript-toolkit
 
 ## Exports 
 ```typescript
-import { Services, BaseHandler, Constants, Construct, Exceptions, Types, Utils } from 'aws-typescript-toolkit';
+// cloud-development
+import { Config, Construct, Types, Utils } from 'aws-typescript-toolkit/cloud-development';
 
-const { Bucket, DeepLink, Dynamodb, Event, Logger, SSM } = Service;
 const { createConstructs, setResources, ConstructMiddleware } = Construct;
-const { BaseError, BackendError, DatabaseError } = Exceptions;
-const { createFileNameHandler, streamToString, flattenInput, constructName, generateName, getConstructs } = Utils;
-const { ValueOf, IAWSLambdaHandler, GqlInput, StackProps, ConstructTypes, IConstruct, INewConstruct, Callback, GenericExtend, gql } = Types;
+const { createFileNameHandler, constructName, generateName, getConstructs } = Utils;
+const { StackProps, ConstructTypes, IConstruct, INewConstruct } = Types;
 const { getConfig } = Config;
-
 const { VERSION, DEPLOYMENT_NAME, PLATFORM_PREFIX, TABLE_NAME } = getConfig();
+
+
+// software-development
+import { BaseHandler, Repository, Service, Services, Exceptions } from 'aws-typescript-toolkit/software-development';
+
+const { Bucket, DeepLink, Dynamodb, Event, Logger, SSM } = Services;
+const { BaseError, BackendError, DatabaseError } = Exceptions;
 ```
 
 ## Construct
@@ -48,7 +53,8 @@ _Usage is similar to `createSlice` from [Redux Toolkit](https://redux-toolkit.js
 ```typescript
 // cdk/constructs/lambda/EntityName.ts
 
-import { Construct, Services, Config } from 'aws-typescript-toolkit'
+import { Construct, Config } from 'aws-typescript-toolkit/cloud-development';
+import { Services } from 'aws-typescript-toolkit/software-development';
 
 const { createConstructs } = Construct;
 const { SSMActions } = Services.SSM
