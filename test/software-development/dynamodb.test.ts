@@ -1,6 +1,6 @@
 import 'jest';
-import { DynamoDbActions, dbHelper } from '../src/services/dynamodb';
-import { generateOrganizationData, generateUserData } from './libs/utils';
+import { DynamoDbActions, dbHelper } from '../../src/software-development/services/dynamodb';
+import { generateOrganizationData, generateUserData } from '../utils';
 
 const TABLE_NAME = 'test-table';
 

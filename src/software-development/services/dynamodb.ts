@@ -1,4 +1,5 @@
-import { BackendError } from './../exceptions/index';
+import { join } from 'path';
+
 import {
   AttributeValue,
   BatchGetItemCommand,
@@ -20,10 +21,12 @@ import {
   UpdateItemCommandInput
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
-import { CatchDatabaseException } from '../utils';
 import { v4 as uuidv4 } from 'uuid';
+
+import { BackendError } from '../exceptions';
 import { ValueOf } from '../types';
-import { join } from 'path';
+import { CatchDatabaseException } from '../utils';
+
 
 // Definitions - Start
 const Functions = {

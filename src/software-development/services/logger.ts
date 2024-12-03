@@ -1,7 +1,9 @@
-import * as Sentry from '@sentry/aws-serverless';
 //import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { ValueOf, levels } from './../types/index';
+import * as Sentry from '@sentry/aws-serverless';
 import { Callback, Context } from 'aws-lambda';
+
+import { ValueOf, levels } from '../types';
+
 
 type LogData = {
   body: Record<string, string>;

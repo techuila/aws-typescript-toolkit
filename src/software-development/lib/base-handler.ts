@@ -1,11 +1,13 @@
-import { SSMClient, GetParametersCommand } from '@aws-sdk/client-ssm';
 import { AppConfigDataClient, StartConfigurationSessionCommand, GetLatestConfigurationCommand } from '@aws-sdk/client-appconfigdata';
-import { serializeError } from 'serialize-error';
-import { IAWSLambdaHandler, gql } from '../types';
-import { Log, Logger } from '../services/logger';
-import { BackendError } from '../exceptions';
-import { Callback, Context } from 'aws-lambda';
+import { SSMClient, GetParametersCommand } from '@aws-sdk/client-ssm';
 import * as Sentry from '@sentry/aws-serverless';
+import { Callback, Context } from 'aws-lambda';
+import { serializeError } from 'serialize-error';
+
+import { BackendError } from '../exceptions';
+import { Log, Logger } from '../services/logger';
+import { IAWSLambdaHandler, gql } from '../types';
+
 
 // Base handler used by other lambda handlers.
 export default abstract class BaseHandler extends Logger {
@@ -26,8 +28,8 @@ export default abstract class BaseHandler extends Logger {
   @Log
   async handler(...args: Parameters<IAWSLambdaHandler>) {
     try {
-      await this.loadSSMParameters();
-      await this.loadFeatureFlags();
+      // await this.loadSSMParameters();
+      // await this.loadFeatureFlags();
       const result = await this.perform(...args);
       const hasData = result && isObjectNotEmpty(result);
       const typename = this.__typename ? { __typename: this.__typename } : {};

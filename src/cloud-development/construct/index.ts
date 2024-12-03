@@ -1,14 +1,17 @@
-import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
-import getCallerFile from 'get-caller-file';
-import { ConstructTypes, IConstruct, IConstructs, Resources, _Construct, Callback, GenericExtend } from '../types';
+import { resolve } from 'path';
+
 import { CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { createFileNameHandler } from '../utils';
+import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { resolve } from 'path';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { Construct } from 'constructs';
+import getCallerFile from 'get-caller-file';
+
+import { ConstructTypes, IConstruct, IConstructs, Resources, _Construct, Callback, GenericExtend } from '../types';
+import { createFileNameHandler } from '../utils';
+
 
 type Constructs<T extends ConstructTypes> = Record<
   string,
