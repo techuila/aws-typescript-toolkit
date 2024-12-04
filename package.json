@@ -8,13 +8,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "config",
-    "construct",
-    "exceptions",
-    "lib",
-    "services",
-    "types",
-    "utils"
+    "cloud-development",
+    "software-development"
   ],
   "scripts": {
     "build": "tsc",
