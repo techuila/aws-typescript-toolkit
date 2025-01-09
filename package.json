@@ -1,7 +1,7 @@
 {
   "name": "aws-typescript-toolkit",
   "type": "commonjs",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "AWS typescript toolkit",
   "license": "ISC",
   "author": "techuila",
