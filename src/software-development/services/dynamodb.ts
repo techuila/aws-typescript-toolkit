@@ -286,30 +286,38 @@ export const dbHelper = {
     await dbHelper.createTable();
   },
   populateItems: async (TableName: string, items: (object & { PK: string; SK: string })[]) => {
-    const params = {
-      RequestItems: {
-        [TableName]: items.map((item) => ({
-          PutRequest: {
-            Item: marshall(item)
-          }
-        }))
+    const MAX_BATCH_SIZE = 25;
+
+    for (let i = 0; i < items.length; i += MAX_BATCH_SIZE) {
+      const batch = items.slice(i, i + MAX_BATCH_SIZE);
+      const params = {
+        RequestItems: {
+          [TableName]: batch.map(item => ({
+            PutRequest: { Item: marshall(item) }
+          }))
+        }
       }
-    };
-    const command = new BatchWriteItemCommand(params);
-    await ddbClient.send(command);
+
+      const command = new BatchWriteItemCommand(params);
+      await ddbClient.send(command);
+    }
   },
   deleteItems: async (TableName: string, Keys: { PK: string; SK: string }[]) => {
-    const params = {
-      RequestItems: {
-        [TableName]: Keys.map((key) => ({
-          DeleteRequest: {
-            Key: marshall(key)
-          }
-        }))
+    const MAX_BATCH_SIZE = 25;
+
+    for (let i = 0; i < Keys.length; i += MAX_BATCH_SIZE) {
+      const batch = Keys.slice(i, i + MAX_BATCH_SIZE);
+      const params = {
+        RequestItems: {
+          [TableName]: batch.map(key => ({
+            DeleteRequest: { Key: marshall(key) }
+          }))
+        }
       }
-    };
-    const command = new BatchWriteItemCommand(params);
-    await ddbClient.send(command);
+
+      const command = new BatchWriteItemCommand(params);
+      await ddbClient.send(command);
+    }
   }
 };
 
