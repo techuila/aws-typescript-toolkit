@@ -2,15 +2,15 @@ import { EventBridgeClient, PutEventsCommand, PutEventsCommandInput } from '@aws
 
 export const client = new EventBridgeClient({});
 export class EventActions {
-	public client = client;
+  public client = client;
 
-	constructor() {}
+  constructor() {}
 
-	putEvents = async (params: PutEventsCommandInput) => {
-		try {
-			return await this.client.send(new PutEventsCommand(params));
-		} catch (err) {
-			throw err;
-		}
-	};
+  putEvents = async (params: PutEventsCommandInput) => {
+    try {
+      return await this.client.send(new PutEventsCommand(params));
+    } catch (err) {
+      throw err;
+    }
+  };
 }
