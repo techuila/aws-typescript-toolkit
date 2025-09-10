@@ -6,12 +6,12 @@ dist/
 
 .DS_Store
 
-config
-construct
-exceptions
-lib
-services
-types
-utils
-software-development
-cloud-development
+/config
+/construct
+/exceptions
+/lib
+/services
+/types
+/utils
+/software-development
+/cloud-development
