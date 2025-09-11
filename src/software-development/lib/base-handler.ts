@@ -1,4 +1,8 @@
-import { AppConfigDataClient, StartConfigurationSessionCommand, GetLatestConfigurationCommand } from '@aws-sdk/client-appconfigdata';
+import {
+  AppConfigDataClient,
+  StartConfigurationSessionCommand,
+  GetLatestConfigurationCommand
+} from '@aws-sdk/client-appconfigdata';
 import * as Sentry from '@sentry/aws-serverless';
 import { Callback, Context } from 'aws-lambda';
 import { serializeError } from 'serialize-error';
@@ -6,7 +10,6 @@ import { serializeError } from 'serialize-error';
 import { BackendError } from '../exceptions';
 import { Log, Logger } from '../services/logger';
 import { IAWSLambdaHandler, gql } from '../types';
-
 
 // Base handler used by other lambda handlers.
 export default abstract class BaseHandler extends Logger {
@@ -28,7 +31,11 @@ export default abstract class BaseHandler extends Logger {
     try {
       const result = await this.perform(...args);
       const hasData = result && isObjectNotEmpty(result);
-      const typename = this.__typename ? { __typename: this.__typename } : {};
+      const typename = result.__typename // if the result already has __typename…
+        ? {} // …don’t add anything
+        : this.__typename // otherwise, if this.__typename exists…
+        ? { __typename: this.__typename } // …add it
+        : {}; // else add nothing
 
       return hasData ? Object.assign(result, typename) : null;
     } catch (error) {
@@ -58,17 +65,16 @@ export default abstract class BaseHandler extends Logger {
       const startSessionCommand = new StartConfigurationSessionCommand({
         ApplicationIdentifier: app_id,
         EnvironmentIdentifier: env_id,
-        ConfigurationProfileIdentifier: profile_id,
+        ConfigurationProfileIdentifier: profile_id
       });
 
       const sessionResponse = await client.send(startSessionCommand);
       const getConfigCommand = new GetLatestConfigurationCommand({
-        ConfigurationToken: sessionResponse.InitialConfigurationToken,
+        ConfigurationToken: sessionResponse.InitialConfigurationToken
       });
 
       const configResponse = await client.send(getConfigCommand);
       this.featureFlags = JSON.parse(new TextDecoder().decode(configResponse.Configuration)) as Record<string, any>;
-
     } catch (error) {
       throw new BackendError('Failed to load AppConfig feature flags');
     }

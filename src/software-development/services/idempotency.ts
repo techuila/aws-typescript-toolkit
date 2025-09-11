@@ -11,6 +11,7 @@ import {
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { serializeError } from 'serialize-error';
 import { DatabaseError } from '../exceptions';
+import { DynamoDbActions } from './dynamodb';
 
 /**
  * Decorator to make a function idempotent by caching its result in a DynamoDB table.
@@ -32,38 +33,33 @@ export function makeIdempotent<T extends string[]>(scope: string, propertiesToHa
       const data = await idempotencyCache.get(primaryKey);
 
       if (data) {
+        console.info(`Idempotent: Returning cached response for key ${primaryKey}`);
         return data;
       }
 
-      const createIdempotencyRecordPromise = idempotencyCache.create(`${scope}#${payloadHash}`, null, ttl);
-
-      // Call the original method and cache the result
-      const originalMethodPromise = method.apply(this, args);
-
-      // Run both promises in concurrency
-      const [idempotencyRecord, result] = await Promise.allSettled([
-        createIdempotencyRecordPromise,
-        originalMethodPromise
-      ]);
-      const payload = {
-        fulfilled: {
-          status: 'COMPLETED' as IdempotencyStatus,
-          response: (result as PromiseFulfilledResult<Record<string, any>>).value
-        },
-        rejected: {
-          status: 'FAILED' as IdempotencyStatus,
-          response: serializeError((result as PromiseRejectedResult).reason)
+      try {
+        // Create a new idempotency record with status IN_PROGRESS
+        await idempotencyCache.create(`${scope}#${payloadHash}`, ttl);
+      } catch (error: any) {
+        // If the record already exists, it means another request is in progress
+        if (error.message.includes('ConditionalCheckFailedException')) {
+          return IdempotencyCache.ALREADY_IN_PROGRESS_RESPONSE;
         }
-      };
 
-      if (idempotencyRecord.status === 'fulfilled') {
-        await idempotencyCache.update(primaryKey, payload[result.status]);
-      } else {
-        // If we fail to create the idempotency record, we log the error but we don't block the original method result
-        console.error('Failed to create idempotency record:', idempotencyRecord.reason);
+        throw error;
       }
 
-      return payload[result.status].response;
+      try {
+        // Call the original method and cache the result
+        const result = await method.apply(this, args);
+        const payload = { status: 'COMPLETED' as IdempotencyStatus, response: result };
+        await idempotencyCache.update(primaryKey, payload);
+        return result;
+      } catch (error) {
+        const payload = { status: 'FAILED' as IdempotencyStatus, response: serializeError(error as any) };
+        await idempotencyCache.update(primaryKey, payload);
+        throw error;
+      }
     };
   };
 }
@@ -82,12 +78,20 @@ type IdempotencyRecord = {
 };
 
 class IdempotencyCache {
+  static ALREADY_IN_PROGRESS_RESPONSE = {
+    __typename: 'BackendError',
+    message: 'Operation already in progress',
+    details: {
+      status: 409,
+      details: 'Operation already in progress'
+    }
+  };
   private tableName: string;
   private dynamoDbClient: DynamoDBClient;
 
   constructor(tableName: string) {
     this.tableName = tableName;
-    this.dynamoDbClient = new DynamoDBClient({});
+    this.dynamoDbClient = new DynamoDbActions().client;
   }
 
   async hashPayload(propertiesToHash: string[], payload: Record<string, any>): Promise<string> {
@@ -118,14 +122,7 @@ class IdempotencyCache {
 
     if (item) {
       if (item.status === 'IN_PROGRESS') {
-        return {
-          __typename: 'BackendError',
-          message: 'Operation already in progress',
-          details: {
-            status: 409,
-            details: 'Operation already in progress'
-          }
-        };
+        return IdempotencyCache.ALREADY_IN_PROGRESS_RESPONSE;
       } else {
         return item.response!;
       }
@@ -134,7 +131,7 @@ class IdempotencyCache {
     return null;
   }
 
-  async create(primaryKey: IdempotencyRecord['PK'], value: any, ttl: number): Promise<void> {
+  async create(primaryKey: IdempotencyRecord['PK'], ttl: number): Promise<void> {
     const now = Date.now();
     const nowSec = Math.floor(now / 1000);
     const [scope, idempotencyKey] = primaryKey.split('#');
@@ -142,7 +139,6 @@ class IdempotencyCache {
       PK: primaryKey,
       SK: 'IDEMPOTENCY_RECORD',
       status: 'IN_PROGRESS',
-      response: value,
       scope: scope,
       idempotencyKey: idempotencyKey,
       createdAt: new Date(now).toISOString(),
@@ -159,7 +155,7 @@ class IdempotencyCache {
     try {
       await this.dynamoDbClient.send(new PutItemCommand(command));
     } catch (error) {
-      throw new DatabaseError(error);
+      throw error;
     }
   }
 
@@ -173,9 +169,10 @@ class IdempotencyCache {
         PK: primaryKey,
         SK: 'IDEMPOTENCY_RECORD'
       }),
-      UpdateExpression: 'SET #status = :status, updatedAt = :updatedAt',
+      UpdateExpression: 'SET #status = :status, #response = :response, updatedAt = :updatedAt',
       ExpressionAttributeNames: {
-        '#status': 'status'
+        '#status': 'status',
+        '#response': 'response'
       },
       ExpressionAttributeValues: marshall({
         ':status': payload.status,
@@ -189,7 +186,7 @@ class IdempotencyCache {
     try {
       await this.dynamoDbClient.send(new UpdateItemCommand(command));
     } catch (error) {
-      throw new DatabaseError(error);
+      throw error;
     }
   }
 }

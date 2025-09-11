@@ -27,7 +27,6 @@ import { BackendError } from '../exceptions';
 import { ValueOf } from '../types';
 import { CatchDatabaseException } from '../utils';
 
-
 // Definitions - Start
 const Functions = {
   ATTRIBUTE_EXISTS: 'attribute_exists',
@@ -39,12 +38,12 @@ const Functions = {
 } as const;
 
 enum DynamoReturnValues {
-  ALL_NEW = "ALL_NEW",
-  ALL_OLD = "ALL_OLD",
-  NONE = "NONE",
-  UPDATED_NEW = "UPDATED_NEW",
-  UPDATED_OLD = "UPDATED_OLD"
-};
+  ALL_NEW = 'ALL_NEW',
+  ALL_OLD = 'ALL_OLD',
+  NONE = 'NONE',
+  UPDATED_NEW = 'UPDATED_NEW',
+  UPDATED_OLD = 'UPDATED_OLD'
+}
 
 type Function = { function?: ValueOf<typeof Functions> };
 export type Keys = {
@@ -193,7 +192,7 @@ export class DynamoDbActions {
     const params = {
       RequestItems: {
         [tableName]: {
-          Keys: items.map(item => marshall(item))
+          Keys: items.map((item) => marshall(item))
         }
       }
     };
@@ -285,6 +284,13 @@ export const dbHelper = {
     await dbHelper.deleteTable(TableName);
     await dbHelper.createTable();
   },
+  resetDatabase: async () => {
+    const config: { tables: CreateTableCommandInput[] } = require(join(process.cwd(), 'jest-dynamodb-config'));
+    for (const params of config.tables) {
+      await dbHelper.deleteTable(params.TableName!);
+    }
+    await dbHelper.createTable();
+  },
   populateItems: async (TableName: string, items: (object & { PK: string; SK: string })[]) => {
     const MAX_BATCH_SIZE = 25;
 
@@ -292,11 +298,11 @@ export const dbHelper = {
       const batch = items.slice(i, i + MAX_BATCH_SIZE);
       const params = {
         RequestItems: {
-          [TableName]: batch.map(item => ({
+          [TableName]: batch.map((item) => ({
             PutRequest: { Item: marshall(item) }
           }))
         }
-      }
+      };
 
       const command = new BatchWriteItemCommand(params);
       await ddbClient.send(command);
@@ -309,11 +315,11 @@ export const dbHelper = {
       const batch = Keys.slice(i, i + MAX_BATCH_SIZE);
       const params = {
         RequestItems: {
-          [TableName]: batch.map(key => ({
+          [TableName]: batch.map((key) => ({
             DeleteRequest: { Key: marshall(key) }
           }))
         }
-      }
+      };
 
       const command = new BatchWriteItemCommand(params);
       await ddbClient.send(command);
