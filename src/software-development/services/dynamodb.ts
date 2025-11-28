@@ -307,6 +307,8 @@ export const dbHelper = {
       const command = new BatchWriteItemCommand(params);
       await ddbClient.send(command);
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 100)); // Sleep for read consistency
   },
   deleteItems: async (TableName: string, Keys: { PK: string; SK: string }[]) => {
     const MAX_BATCH_SIZE = 25;
@@ -324,6 +326,8 @@ export const dbHelper = {
       const command = new BatchWriteItemCommand(params);
       await ddbClient.send(command);
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 100)); // Sleep for read consistency
   }
 };
 
